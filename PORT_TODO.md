@@ -17,7 +17,7 @@ handling and concurrency.
    - `examples/`: rewrite Python examples using Go. ✅
    - `test/`: unit tests mirroring behaviour of the current `tests/` folder.
 
-## 2. API Surface
+## 2. API Surface ✅
 
 Replicate the high level `query` function which streams `Message` values.
 In Go this could be:
@@ -173,11 +173,11 @@ Aim for parity with the current `tests/` to maintain confidence during the port.
 
 Set up automated testing and quality checks:
 
-- **GitHub Actions**: Configure workflows for testing on multiple Go versions and platforms.
-- **Code Quality**: Integrate `golangci-lint` for comprehensive linting.
-- **Coverage**: Set up code coverage reporting and enforcement.
-- **Dependabot**: Enable automatic dependency updates.
-- **Release Automation**: Consider using `goreleaser` for automated releases.
+- **GitHub Actions**: Configure workflows for testing on multiple Go versions and platforms. ✅
+- **Code Quality**: Integrate `golangci-lint` for comprehensive linting. ✅
+- **Coverage**: Set up code coverage reporting and enforcement. ✅
+- **Dependabot**: Enable automatic dependency updates. ✅
+- **Release Automation**: Consider using `goreleaser` for automated releases. ✅
 
 ## 11. Future Enhancements
 
