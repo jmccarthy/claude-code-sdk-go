@@ -7,15 +7,14 @@ handling and concurrency.
 
 ## 1. Repository Setup
 
-1. **Initialize a module**
+1. **Initialize a module** ✅
    - `go mod init github.com/anthropics/claude-code-sdk-go`
    - Use Go 1.20+ for generics and context features.
-2. **Directory layout**
-   - `cmd/` (optional): example binaries or demos.
-   - `claudecode/`: root package containing the public API.
-   - `internal/`: subpackages for client and transport implementations similar
-     to `src/claude_code_sdk/_internal` in Python.
-   - `examples/`: rewrite Python examples using Go.
+2. **Directory layout** ✅
+   - `cmd/` (optional): example binaries or demos. ✅
+   - `claudecode/`: root package containing the public API. ✅
+   - `internal/`: subpackages for client and transport implementations similar to `src/claude_code_sdk/_internal` in Python. ✅
+   - `examples/`: rewrite Python examples using Go. ✅
    - `test/`: unit tests mirroring behaviour of the current `tests/` folder.
 
 ## 2. API Surface
@@ -155,10 +154,8 @@ Aim for parity with the current `tests/` to maintain confidence during the port.
 
 ## 9. Examples & Documentation
 
-- Convert `examples/quick_start.py` to `examples/quick_start.go` showing basic
-  usage and options.
-- Update `README.md` to include Go installation instructions and usage
-  snippets.
+- Convert `examples/quick_start.py` to `examples/quick_start.go` showing basic usage and options. ✅
+- Update `README.md` to include Go installation instructions and usage snippets. ✅
 
 ## 10. Future Enhancements
 
