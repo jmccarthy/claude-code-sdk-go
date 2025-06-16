@@ -167,14 +167,8 @@ func buildCommand(cliPath, prompt string, opts *model.Options) []string {
 	if len(opts.AllowedTools) > 0 {
 		args = append(args, "--allowedTools", join(opts.AllowedTools))
 	}
-	if opts.MaxThinkingTokens > 0 {
-		args = append(args, "--max-thinking-tokens", fmt.Sprint(opts.MaxThinkingTokens))
-	} else {
-		args = append(args, "--max-thinking-tokens", "8000")
-	}
-	if len(opts.MCPTools) > 0 {
-		args = append(args, "--mcpTools", join(opts.MCPTools))
-	}
+	// Note: max-thinking-tokens and mcpTools CLI parameters don't exist in claude CLI
+	// These were hallucinated - removed to match Python SDK exactly
 	if opts.MaxTurns > 0 {
 		args = append(args, "--max-turns", fmt.Sprint(opts.MaxTurns))
 	}
