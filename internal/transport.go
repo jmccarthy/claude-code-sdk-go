@@ -19,6 +19,7 @@ import (
 type Transport interface {
 	Connect(ctx context.Context) error
 	Disconnect() error
+	SendRequest(ctx context.Context, messages []map[string]any, options map[string]any) error
 	ReceiveMessages(ctx context.Context) (<-chan map[string]any, error)
 }
 
@@ -76,6 +77,12 @@ func (t *SubprocessCLITransport) Disconnect() error {
 	if t.cmd != nil && t.cmd.Process != nil {
 		_ = t.cmd.Process.Kill()
 	}
+	return nil
+}
+
+// SendRequest is unused for the CLI transport since requests are passed via
+// command-line arguments. It exists for interface compatibility.
+func (t *SubprocessCLITransport) SendRequest(ctx context.Context, messages []map[string]any, options map[string]any) error {
 	return nil
 }
 
@@ -153,6 +160,11 @@ func buildCommand(cliPath, prompt string, opts *model.Options) []string {
 	if len(opts.AllowedTools) > 0 {
 		args = append(args, "--allowedTools", join(opts.AllowedTools))
 	}
+	tokens := opts.MaxThinkingTokens
+	if tokens == 0 {
+		tokens = 8000
+	}
+	args = append(args, "--max-thinking-tokens", fmt.Sprint(tokens))
 	if opts.MaxTurns > 0 {
 		args = append(args, "--max-turns", fmt.Sprint(opts.MaxTurns))
 	}
@@ -173,6 +185,9 @@ func buildCommand(cliPath, prompt string, opts *model.Options) []string {
 	}
 	if opts.Resume != "" {
 		args = append(args, "--resume", opts.Resume)
+	}
+	if len(opts.MCPTools) > 0 {
+		args = append(args, "--mcp-tools", join(opts.MCPTools))
 	}
 	if len(opts.MCPServers) > 0 {
 		// simple JSON encoding

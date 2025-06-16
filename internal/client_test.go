@@ -23,6 +23,10 @@ func (s *stubTransport) Disconnect() error {
 	return nil
 }
 
+func (s *stubTransport) SendRequest(ctx context.Context, messages []map[string]any, options map[string]any) error {
+	return nil
+}
+
 func (s *stubTransport) ReceiveMessages(ctx context.Context) (<-chan map[string]any, error) {
 	ch := make(chan map[string]any)
 	go func() {
@@ -91,13 +95,15 @@ func TestClientQuery(t *testing.T) {
 		{"type": "result", "subtype": "done"},
 	}}
 	c := &Client{Transport: st}
-	ch, err := c.Query(context.Background(), "hi", nil)
+	ch, errCh, err := c.Query(context.Background(), "hi", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	var msgs []model.Message
 	for m := range ch {
 		msgs = append(msgs, m)
+	}
+	for range errCh {
 	}
 	if len(msgs) != 2 {
 		t.Fatalf("expected 2 messages, got %d", len(msgs))

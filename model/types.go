@@ -94,6 +94,7 @@ type Options struct {
 	Model                    string
 	PermissionPromptToolName string
 	Cwd                      string
+	CLIPath                  string
 }
 
 // MCPServerConfig represents configuration for an MCP server.

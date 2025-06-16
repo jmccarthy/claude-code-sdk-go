@@ -29,12 +29,27 @@ import (
 
 func main() {
     ctx := context.Background()
-    ch, err := claudecode.Query(ctx, "What is 2 + 2?", nil)
+    ch, errCh, err := claudecode.Query(ctx, "What is 2 + 2?", nil)
     if err != nil {
         log.Fatal(err)
     }
-    for msg := range ch {
-        log.Printf("%+v", msg)
+    for {
+        select {
+        case msg, ok := <-ch:
+            if !ok {
+                ch = nil
+                continue
+            }
+            log.Printf("%+v", msg)
+        case e, ok := <-errCh:
+            if ok {
+                log.Printf("error: %v", e)
+            }
+            errCh = nil
+        }
+        if ch == nil && errCh == nil {
+            break
+        }
     }
 }
 ```

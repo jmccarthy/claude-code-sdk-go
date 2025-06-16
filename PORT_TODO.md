@@ -153,9 +153,9 @@ Rewrite Python tests using Go's `testing` package. Focus on:
 - Command construction for the transport.
 - Parsing of CLI JSON into message structs.
 - Error cases (CLI not found, process errors, JSON decode failures).
-- **TODO:** Go `Query` currently drops these errors. Implement propagation so callers
-  receive `CLINotFoundError`, `ProcessError` and `CLIJSONDecodeError` like the
-  Python SDK, and add tests for these cases.
+- Go `Query` now propagates `CLINotFoundError`, `ProcessError` and
+  `CLIJSONDecodeError` via a separate error channel with tests covering these
+  cases.
 - High level `Query` behaviour with mocked transport (use interfaces and test
   doubles).
 - Context cancellation behavior and timeout handling.
@@ -185,15 +185,15 @@ Set up automated testing and quality checks:
 
 ## Remaining Parity Tasks
 
-The bulk of the Python SDK functionality has been ported, but a few gaps remain
-to match the reference implementation:
+The bulk of the Python SDK functionality has been ported and the remaining
+parity gaps have been closed:
 
-- Add a `SendRequest()` method to the `Transport` interface so that alternative
-  transports can conform to the same API as the Python SDK.
-- Expose an option for specifying a custom `CLIPath` when creating the
-  transport. The Python SDK allows overriding the path to the `claude` binary.
-- Include `MaxThinkingTokens` and `MCPTools` when building the CLI command and
-  use the Python default of `8000` thinking tokens when unspecified.
+- ✅ Added a `SendRequest()` method to the `Transport` interface for API
+  compatibility.
+- ✅ Exposed a `CLIPath` option so callers can override the path to the Claude
+  CLI binary.
+- ✅ Included `MaxThinkingTokens` (defaulting to `8000`) and `MCPTools` when
+  constructing the CLI command.
 
 ## Summary
 
