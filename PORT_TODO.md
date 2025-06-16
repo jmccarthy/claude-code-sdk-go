@@ -153,6 +153,9 @@ Rewrite Python tests using Go's `testing` package. Focus on:
 - Command construction for the transport.
 - Parsing of CLI JSON into message structs.
 - Error cases (CLI not found, process errors, JSON decode failures).
+- **TODO:** Go `Query` currently drops these errors. Implement propagation so callers
+  receive `CLINotFoundError`, `ProcessError` and `CLIJSONDecodeError` like the
+  Python SDK, and add tests for these cases.
 - High level `Query` behaviour with mocked transport (use interfaces and test
   doubles).
 - Context cancellation behavior and timeout handling.
