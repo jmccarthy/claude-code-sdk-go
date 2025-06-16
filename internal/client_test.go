@@ -11,6 +11,7 @@ type stubTransport struct {
 	msgs         []map[string]any
 	connected    bool
 	disconnected bool
+	sent         bool
 }
 
 func (s *stubTransport) Connect(ctx context.Context) error {
@@ -20,6 +21,11 @@ func (s *stubTransport) Connect(ctx context.Context) error {
 
 func (s *stubTransport) Disconnect() error {
 	s.disconnected = true
+	return nil
+}
+
+func (s *stubTransport) SendRequest(ctx context.Context, prompt string, opts *model.Options) error {
+	s.sent = true
 	return nil
 }
 
@@ -91,7 +97,7 @@ func TestClientQuery(t *testing.T) {
 		{"type": "result", "subtype": "done"},
 	}}
 	c := &Client{Transport: st}
-	ch, err := c.Query(context.Background(), "hi", nil)
+	ch, errCh, err := c.Query(context.Background(), "hi", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +108,27 @@ func TestClientQuery(t *testing.T) {
 	if len(msgs) != 2 {
 		t.Fatalf("expected 2 messages, got %d", len(msgs))
 	}
-	if !st.connected || !st.disconnected {
+	if !st.connected || !st.disconnected || !st.sent {
 		t.Fatalf("transport lifecycle not called")
+	}
+	if errVal := <-errCh; errVal != nil {
+		t.Fatalf("unexpected error: %v", errVal)
+	}
+}
+
+func TestClientQueryErrorPropagation(t *testing.T) {
+	perr := &model.ProcessError{Msg: "fail", ExitCode: 1}
+	st := &stubTransport{msgs: []map[string]any{
+		{"error": perr},
+	}}
+	c := &Client{Transport: st}
+	ch, errCh, err := c.Query(context.Background(), "hi", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for range ch {
+	}
+	if e := <-errCh; e != perr {
+		t.Fatalf("expected error propagation")
 	}
 }

@@ -19,6 +19,7 @@ import (
 type Transport interface {
 	Connect(ctx context.Context) error
 	Disconnect() error
+	SendRequest(ctx context.Context, prompt string, opts *model.Options) error
 	ReceiveMessages(ctx context.Context) (<-chan map[string]any, error)
 }
 
@@ -32,6 +33,19 @@ type SubprocessCLITransport struct {
 	cmd    *exec.Cmd
 	stdout io.ReadCloser
 	stderr io.ReadCloser
+}
+
+// SendRequest stores the prompt and options for the next connection.
+func (t *SubprocessCLITransport) SendRequest(ctx context.Context, prompt string, opts *model.Options) error {
+	t.Prompt = prompt
+	t.Options = opts
+	if opts != nil {
+		t.Cwd = opts.Cwd
+		if opts.CLIPath != "" {
+			t.CLIPath = opts.CLIPath
+		}
+	}
+	return nil
 }
 
 // Connect starts the CLI process with the provided options.
@@ -152,6 +166,14 @@ func buildCommand(cliPath, prompt string, opts *model.Options) []string {
 	}
 	if len(opts.AllowedTools) > 0 {
 		args = append(args, "--allowedTools", join(opts.AllowedTools))
+	}
+	if opts.MaxThinkingTokens > 0 {
+		args = append(args, "--max-thinking-tokens", fmt.Sprint(opts.MaxThinkingTokens))
+	} else {
+		args = append(args, "--max-thinking-tokens", "8000")
+	}
+	if len(opts.MCPTools) > 0 {
+		args = append(args, "--mcpTools", join(opts.MCPTools))
 	}
 	if opts.MaxTurns > 0 {
 		args = append(args, "--max-turns", fmt.Sprint(opts.MaxTurns))

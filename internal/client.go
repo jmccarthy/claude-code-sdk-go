@@ -12,35 +12,39 @@ type Client struct {
 }
 
 // Query connects to the transport and streams parsed messages.
-func (c *Client) Query(ctx context.Context, prompt string, opts *model.Options) (<-chan model.Message, error) {
-	if sp, ok := c.Transport.(*SubprocessCLITransport); ok {
-		sp.Prompt = prompt
-		sp.Options = opts
-		if opts != nil {
-			sp.Cwd = opts.Cwd
-		}
+func (c *Client) Query(ctx context.Context, prompt string, opts *model.Options) (<-chan model.Message, <-chan error, error) {
+	if err := c.Transport.SendRequest(ctx, prompt, opts); err != nil {
+		return nil, nil, err
 	}
 
 	if err := c.Transport.Connect(ctx); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	rawCh, err := c.Transport.ReceiveMessages(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	out := make(chan model.Message)
+	errCh := make(chan error, 1)
 	go func() {
 		defer close(out)
+		defer close(errCh)
 		defer c.Transport.Disconnect()
 		for data := range rawCh {
+			if errVal, ok := data["error"]; ok {
+				if e, ok2 := errVal.(error); ok2 {
+					errCh <- e
+					return
+				}
+			}
 			if m := parseMessage(data); m != nil {
 				out <- m
 			}
 		}
 	}()
-	return out, nil
+	return out, errCh, nil
 }
 
 func parseMessage(data map[string]any) model.Message {

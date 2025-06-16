@@ -86,6 +86,7 @@ type Options struct {
 	AppendSystemPrompt       string
 	MCPTools                 []string
 	MCPServers               map[string]MCPServerConfig
+	CLIPath                  string
 	PermissionMode           PermissionMode
 	ContinueConversation     bool
 	Resume                   string
