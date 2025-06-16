@@ -1,0 +1,14 @@
+project_name: claude-code-sdk-go
+release:
+  github:
+    owner: anthropics
+    name: claude-code-sdk-go
+builds:
+  - main: ./examples/quick_start.go
+    id: quick_start
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+archives:
+  - id: quick_start
+    builds: [quick_start]
+    format: tar.gz
