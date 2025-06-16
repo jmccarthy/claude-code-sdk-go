@@ -16,6 +16,9 @@ func (c *Client) Query(ctx context.Context, prompt string, opts *model.Options) 
 	if sp, ok := c.Transport.(*SubprocessCLITransport); ok {
 		sp.Prompt = prompt
 		sp.Options = opts
+		if opts != nil {
+			sp.Cwd = opts.Cwd
+		}
 	}
 
 	if err := c.Transport.Connect(ctx); err != nil {
