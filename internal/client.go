@@ -31,7 +31,11 @@ func (c *Client) Query(ctx context.Context, prompt string, opts *model.Options) 
 	go func() {
 		defer close(out)
 		defer close(errCh)
-		defer c.Transport.Disconnect()
+		defer func() {
+			if err := c.Transport.Disconnect(); err != nil {
+				errCh <- err
+			}
+		}()
 		for data := range rawCh {
 			if errVal, ok := data["error"]; ok {
 				if e, ok2 := errVal.(error); ok2 {
