@@ -179,6 +179,19 @@ Set up automated testing and quality checks:
 - **Dependabot**: Enable automatic dependency updates. ✅
 - **Release Automation**: Consider using `goreleaser` for automated releases. ✅
 
+## Remaining Parity Tasks
+
+The bulk of the Python SDK functionality has been ported, but a few gaps remain
+to match the reference implementation:
+
+- Add a `SendRequest()` method to the `Transport` interface so that alternative
+  transports can conform to the same API as the Python SDK.
+- Expose an option for specifying a custom `CLIPath` when creating the
+  transport. The Python SDK allows overriding the path to the `claude` binary.
+- Include `MaxThinkingTokens` and `MCPTools` when building the CLI command and
+  use the Python default of `8000` thinking tokens when unspecified.
+
+
 ## 11. Future Enhancements
 
 - Consider exposing a synchronous API for simple use cases in addition to the
