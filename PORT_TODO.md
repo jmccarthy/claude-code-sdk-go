@@ -29,7 +29,7 @@ func Query(ctx context.Context, prompt string, opts *Options) (<-chan Message, e
 `Message` is a sum type represented by separate structs. The function returns a
 read-only channel to allow consumers to range over the stream.
 
-## 3. Types
+## 3. Types ✅
 
 Translate all dataclasses in `src/claude_code_sdk/types.py` to Go structs.
 Use string constants for enums such as `PermissionMode`.
@@ -90,7 +90,7 @@ type Options struct {
 }
 ```
 
-## 4. Errors
+## 4. Errors ✅
 
 Create custom error types analogous to `_errors.py`. Each should implement the
 `error` interface. Example:
@@ -103,7 +103,7 @@ func (e *CLIConnectionError) Error() string { return e.Msg }
 Include errors for `CLINotFoundError`, `ProcessError` (with fields for exit code
 and stderr), and `CLIJSONDecodeError`.
 
-## 5. Transport Layer
+## 5. Transport Layer ✅
 
 Recreate the `Transport` interface and the subprocess implementation using
 `os/exec`.
@@ -116,7 +116,7 @@ Recreate the `Transport` interface and the subprocess implementation using
 - Search for the `claude` binary using locations from `_find_cli` in the Python
   code. When not found, return `CLINotFoundError` with helpful instructions.
 
-## 6. Internal Client
+## 6. Internal Client ✅
 
 Implement a client similar to `_internal/client.py`:
 
@@ -131,7 +131,7 @@ Implement a client similar to `_internal/client.py`:
 - Implement proper channel closing patterns to prevent goroutine leaks.
 - Consider using `sync.WaitGroup` or `errgroup.Group` for coordinating cleanup.
 
-## 7. Public API
+## 7. Public API ✅
 
 Expose a package-level `Query` function which sets `CLAUDE_CODE_ENTRYPOINT`
 environment variable to `sdk-go` and delegates to the internal client.
@@ -146,7 +146,7 @@ for msg := range ch {
 }
 ```
 
-## 8. Testing
+## 8. Testing ✅
 
 Rewrite Python tests using Go's `testing` package. Focus on:
 
