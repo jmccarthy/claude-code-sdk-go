@@ -125,6 +125,12 @@ Implement a client similar to `_internal/client.py`:
 3. Map raw data to strongly typed `Message` values (mirroring `_parse_message`).
 4. Ensure all resources are cleaned up with `defer transport.Disconnect()`.
 
+**Context & Resource Management:**
+- Propagate context through all operations for proper cancellation.
+- Use `context.WithCancel()` to ensure subprocess cleanup on context cancellation.
+- Implement proper channel closing patterns to prevent goroutine leaks.
+- Consider using `sync.WaitGroup` or `errgroup.Group` for coordinating cleanup.
+
 ## 7. Public API
 
 Expose a package-level `Query` function which sets `CLAUDE_CODE_ENTRYPOINT`
@@ -149,6 +155,12 @@ Rewrite Python tests using Go's `testing` package. Focus on:
 - Error cases (CLI not found, process errors, JSON decode failures).
 - High level `Query` behaviour with mocked transport (use interfaces and test
   doubles).
+- Context cancellation behavior and timeout handling.
+- Resource cleanup (ensure processes are terminated and channels closed).
+
+Add Go-specific testing:
+- Race condition detection using `go test -race`.
+- Table-driven tests for comprehensive option validation.
 
 Aim for parity with the current `tests/` to maintain confidence during the port.
 
@@ -157,12 +169,23 @@ Aim for parity with the current `tests/` to maintain confidence during the port.
 - Convert `examples/quick_start.py` to `examples/quick_start.go` showing basic usage and options. ✅
 - Update `README.md` to include Go installation instructions and usage snippets. ✅
 
-## 10. Future Enhancements
+## 10. CI/CD & Development Workflow
+
+Set up automated testing and quality checks:
+
+- **GitHub Actions**: Configure workflows for testing on multiple Go versions and platforms.
+- **Code Quality**: Integrate `golangci-lint` for comprehensive linting.
+- **Coverage**: Set up code coverage reporting and enforcement.
+- **Dependabot**: Enable automatic dependency updates.
+- **Release Automation**: Consider using `goreleaser` for automated releases.
+
+## 11. Future Enhancements
 
 - Consider exposing a synchronous API for simple use cases in addition to the
   streaming channel form.
 - Provide context-aware cancellation so callers can abort long-running queries.
 - Explore packaging the CLI binary with the Go SDK for easier installation.
+- **Observability**: Add structured logging with configurable levels.
 
 ---
 This plan should serve as a starting point for reimplementing the Claude Code
